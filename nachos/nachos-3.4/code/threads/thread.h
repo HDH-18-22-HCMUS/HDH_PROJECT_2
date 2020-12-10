@@ -39,7 +39,7 @@
 
 #include "copyright.h"
 #include "utility.h"
-
+ 
 #ifdef USER_PROGRAM
 #include "machine.h"
 #include "addrspace.h"
@@ -88,6 +88,8 @@ class Thread {
 					// is called
 
     // basic thread operations
+    int processID; // ID de phan biet cac tien trinh
+    int exitStatus;
 
     void Fork(VoidFunctionPtr func, int arg); 	// Make thread run (*func)(arg)
     void Yield();  				// Relinquish the CPU if any 

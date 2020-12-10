@@ -29,6 +29,9 @@ SynchDisk   *synchDisk;
 
 #ifdef USER_PROGRAM	// requires either FILESYS or FILESYS_STUB
 Machine *machine;	// user program memory and registers
+Semaphore *addrLock;
+BitMap *gPhysPageBitMap; // qli frames
+PTable *pTab; //qli tien trinh
 #endif
 
 #ifdef NETWORK
