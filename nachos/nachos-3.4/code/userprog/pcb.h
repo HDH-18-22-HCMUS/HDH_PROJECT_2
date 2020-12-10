@@ -16,7 +16,7 @@ private:
 	int		numwait;	//so tien trinh da join
 
 public:
-	int 		parentID;	//ID cua tien trinh cha
+	int 	parentID;	//ID cua tien trinh cha
 	int		JoinStatus;	//Trang thai co Join voi tien trinh nao khong? neu co thi gia tri chinh la ID cua tien trinh ma no Join
 
 	PCB(int id);
