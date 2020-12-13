@@ -11,8 +11,8 @@ class PTable
 {
 private:
 	BitMap		*bm;
-	PCB		*pcb[MAXPROCESS];
-	int		psize;
+	PCB			*pcb[MAXPROCESS];
+	int			psize;
 	Semaphore	*bmsem;		//Dung de ngan chan truong hop nap 2 tien trinh cung luc
 
 public:

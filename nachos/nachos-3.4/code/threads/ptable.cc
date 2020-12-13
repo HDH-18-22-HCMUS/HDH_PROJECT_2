@@ -1,5 +1,6 @@
 #include "ptable.h"
 #include "system.h"
+#include "openfile.h"
 
 PTable::PTable(int size)
 {
@@ -11,6 +12,10 @@ PTable::PTable(int size)
 	for(i = 0 ; i < MAXPROCESS ; ++i)
 		pcb[i] = NULL;
 	bm->Mark(0);
+
+	pcb[0] = new PCB[0];
+	pcb[0]->parentID = -1;
+	
 }
 
 PTable::~PTable()
@@ -18,8 +23,10 @@ PTable::~PTable()
 	int i=0;
 	if(bm!=NULL)
 		delete bm;
+
 	if(bmsem!=NULL)
 		delete bmsem;
+
 	for(i=0; i<MAXPROCESS; i++)
 		if(pcb[i]!=NULL)
 			delete pcb[i];
@@ -43,7 +50,7 @@ int PTable::ExecUpdate(char* filename)
 ////////////////////////////////////////////////////////////
 
 //Kiem tra chuong trinh duoc goi co la chinh no khong
-	if(!strcmp(filename,currentThread->getName()))
+	if(strcmp(filename,currentThread->getName()) == 0)
 	{
 		printf("\nLoi: khong duoc phep goi exce chinh no !!!\n");
 		bmsem->V();
@@ -83,6 +90,7 @@ int PTable::ExitUpdate(int ec)
 //Neu la main process thi Halt()
 	if(pID==0)
 	{
+		currentThread->FreeSpace();
 		interrupt->Halt();
 		return 0;
 	}

@@ -13,7 +13,7 @@ PCB::PCB(int id)
 	exitcode= 0;
 	numwait= 0;
 	if(id)
-		parentID= currentThread->processID;
+		parentID = currentThread->processID;
 	else
 		parentID= 0;
 	thread= NULL;
@@ -29,11 +29,17 @@ PCB::~PCB()
 		delete exitsem;
 	if(mutex != NULL)
 		delete mutex;
+	if(thread != NULL)
+	{
+		thread->FreeSpace();
+		thread->Finish();
+	}
 }
 
 //------------------------------------------------------------------
 int PCB::GetID()
 {
+	pid = thread->processID;
 	return pid;
 }
 
@@ -104,6 +110,7 @@ int PCB::Exec(char *filename, int pID)
 		return -1;
 	}
 	thread->processID= pID;
+	parentID = currentThread->processID;
 	thread->Fork(MyStartProcess,pID);
 	mutex->V();
 	return pID;
