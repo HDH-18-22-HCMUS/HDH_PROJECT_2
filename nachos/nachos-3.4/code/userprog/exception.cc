@@ -52,7 +52,28 @@
 //	"which" is the kind of exception.  The list of possible exceptions
 //	are in machine.h.
 //----------------------------------------------------------------------
+void ThreadFuncForUserProg(int arg)
+{
+    switch (arg)
+    {
+    case 0: // Fork
+        // Fork just restore registers.
+        currentThread->RestoreUserState();
+        break;
+    case 1: // Exec
+        if (currentThread->space != NULL)
+        {
+            // Exec should initialize registers and restore address space.
+            currentThread->space->InitRegisters();
+            currentThread->space->RestoreState();
+        }
+        break;
+    default:
+        break;
+    }
 
+    machine->Run();
+}
 void AdvanceProgramCounter()
 {
     // Advance program counters.
@@ -157,7 +178,6 @@ void ExceptionHandler(ExceptionType which)
             DEBUG('a', "Shutdown, initiated by user program.\n");
             interrupt->Halt();
             break;
-            //test SC_ sub
         }
         case SC_Sub:
         {
@@ -192,13 +212,12 @@ void ExceptionHandler(ExceptionType which)
             int result = 0; // Ket qua tra ve
             int len = 0;
             bool isNeg = false; // xac nhan kha nang chuoi la so am
-            bool isNum = true; // xac nhan chuoi la so nguyen
-            bool isOf = false; // xac nhan tinh trang Overflow
-
+            bool isNum = true;  // xac nhan chuoi la so nguyen
+            bool isOf = false;  // xac nhan tinh trang Overflow
 
             while (true)
             {
-                gSynchConsole->Read (&ch, 1);
+                gSynchConsole->Read(&ch, 1);
 
                 //Xet ky tu dau
                 if (len == 0)
@@ -234,7 +253,7 @@ void ExceptionHandler(ExceptionType which)
                 if (isNum)
                 {
                     //Xac nhan ky tu la chu so hay khong
-                    if((ch <'0' ) || (ch > '9'))
+                    if ((ch < '0') || (ch > '9'))
                     {
                         isNum = false;
                         result = 0;
@@ -246,7 +265,7 @@ void ExceptionHandler(ExceptionType which)
                             int n = (int)(ch & 0xf); //Chuyen doi chu so thanh so
                             int temp = result * 10 + n;
                             // Xet truong hop bat thuong de nhan dinh Overflow
-                            if ((temp <= result) && (result !=0))
+                            if ((temp <= result) && (result != 0))
                             {
                                 isOf = true;
                             }
@@ -254,10 +273,8 @@ void ExceptionHandler(ExceptionType which)
                             {
                                 result = temp;
                             }
-                            
                         }
                     }
-                    
                 }
                 len++;
             }
@@ -270,7 +287,7 @@ void ExceptionHandler(ExceptionType which)
                     //printf("Overflow\n"); //Debug Overflow
                     if (isNeg)
                     {
-                        result = 0x80000000;// So am nhor nhat co the bieu dien
+                        result = 0x80000000; // So am nhor nhat co the bieu dien
                     }
                     else
                     {
@@ -289,7 +306,7 @@ void ExceptionHandler(ExceptionType which)
             {
                 result = 0;
             }
-            
+
             machine->WriteRegister(2, result);
 
             break;
@@ -392,6 +409,73 @@ void ExceptionHandler(ExceptionType which)
             delete[] string;
             break;
         }
+
+        case SC_Exec:
+        {
+            // Input: vi tri int
+            // Output: Fail return -1, Success: return id cua thread dang chay
+            // SpaceId Exec(char *name);
+            int virtAddr;
+            virtAddr = machine->ReadRegister(4); // doc dia chi ten chuong trinh tu thanh ghi r4
+            char *name;
+            name = User2System(virtAddr, MAX_LENGTH); // Lay ten chuong trinh, nap vao kernel
+            if (name == NULL)
+            {
+                DEBUG('a', "\n Not enough memory in System");
+                printf("\n Not enough memory in System");
+                machine->WriteRegister(2, -1);
+                break;
+            }
+            OpenFile *oFile = fileSystem->Open(name);
+            if (oFile == NULL)
+            {
+                printf("\nExec:: Can't open this file.");
+                machine->WriteRegister(2, -1);
+                break;
+            }
+
+            delete oFile;
+
+            // Return child process id
+            int id = processTab->ExecUpdate(name);
+            machine->WriteRegister(2, id);
+
+            delete[] name;
+            break;
+        }
+
+        case SC_Join:
+        {
+            // int Join(SpaceId id)
+            // Input: id dia chi cua thread
+            // Output:
+            int id = machine->ReadRegister(4);
+
+            int res = processTab->JoinUpdate(id);
+
+            machine->WriteRegister(2, res);
+            break;
+        }
+/*
+        case SC_Exit:
+        {
+            //void Exit(int status);
+            // Input: status code
+            int exitStatus = machine->ReadRegister(4);
+
+            if (exitStatus != 0)
+            {
+                break;
+            }
+
+            int res = processTab->ExitUpdate(exitStatus);
+            //machine->WriteRegister(2, res);
+
+            currentThread->FreeSpace();
+            currentThread->Finish();
+            break;
+        }
+*/
         default:
         {
             printf("Unexpected user mode exception %d %d\n", which, type);

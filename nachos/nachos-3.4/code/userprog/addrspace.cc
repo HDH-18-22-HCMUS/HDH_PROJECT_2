@@ -136,7 +136,7 @@ AddrSpace::AddrSpace(char* filename)
     
     if (executable == NULL){
         printf("\nAddrspace:: Khong the mo file: %s",filename);
-        DEBUG(dbgFile,"\n Error opening file.");
+//        DEBUG(dbgFile,"\n Error opening file.");
         return;
     }
 

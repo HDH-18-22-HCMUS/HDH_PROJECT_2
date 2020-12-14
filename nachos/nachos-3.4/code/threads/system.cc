@@ -32,6 +32,7 @@ Machine *machine;	// user program memory and registers
 SynchConsole* gSynchConsole;
 PTable *processTab;
 Semaphore *addrLock;
+BitMap *gPhyPageBM;
 #endif
 
 #ifdef NETWORK
@@ -156,12 +157,14 @@ Initialize(int argc, char **argv)
     CallOnUserAbort(Cleanup);			// if user hits ctl-C
     
 #ifdef USER_PROGRAM
-    machine = new Machine(debugUserProg);	// this must come first
-    gSynchConsole = new gSynchConsole();
 
+    machine = new Machine(debugUserProg);	// this must come first
+/*
+    gSynchConsole = new gSynchConsole();
     addrLock = new Semaphore("addrLock", 1);
     processTab = new PTable(10);
     gPhyPageBM = new BitMap(256);
+*/
 #endif
 
 #ifdef FILESYS
