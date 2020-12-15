@@ -96,7 +96,7 @@ AddrSpace::AddrSpace(OpenFile *executable)
     pageTable = new TranslationEntry[numPages];
     for (i = 0; i < numPages; i++) {
 	pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
-	pageTable[i].physicalPage = i;
+	pageTable[i].physicalPage = i;//gPhyPageBM->Find();
 	pageTable[i].valid = TRUE;
 	pageTable[i].use = FALSE;
 	pageTable[i].dirty = FALSE;
@@ -127,11 +127,12 @@ AddrSpace::AddrSpace(OpenFile *executable)
 
 AddrSpace::AddrSpace(char* filename)
 {
+    
     NoffHeader noffH;
     unsigned int i, size, j;
     unsigned int numCodePage, numDataPage;                                      // số trang cho phần code và phần initData
     int lastCodePageSize, lastDataPageSize, firstDataPageSize,tempDataSize;     // kích
-                                                                                //thước ghi vào trang cuối Code, initData, và trang đầu của initData
+    //printf(filename);                                                    //thước ghi vào trang cuối Code, initData, và trang đầu của initData
     OpenFile* executable = fileSystem->Open(filename);
     
     if (executable == NULL){
@@ -159,6 +160,7 @@ AddrSpace::AddrSpace(char* filename)
 
     // so trang con trong tren RAM
     int numclear = gPhyPageBM->NumClear();
+    printf("\n\nSize: %d | numPages: %d | PageSize: %d | Numclear: %d\n\n", size, numPages, PageSize, numclear);  
 
     if (numPages > numclear){
         printf("\nAddrSpace:Load: khong du bo nho cho tien trinh moi..!");
@@ -223,6 +225,7 @@ AddrSpace::AddrSpace(char* filename)
         executable->ReadAt(&(machine->mainMemory[noffH.code.virtualAddr])+ pageTable[i].physicalPage*PageSize, j<(numDataPage-1)?PageSize:lastDataPageSize, noffH.initData.inFileAddr + j*PageSize + firstDataPageSize);
         i++;
     }
+   
     delete executable;
     return; 
 }

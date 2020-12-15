@@ -159,12 +159,11 @@ Initialize(int argc, char **argv)
 #ifdef USER_PROGRAM
 
     machine = new Machine(debugUserProg);	// this must come first
-/*
-    gSynchConsole = new gSynchConsole();
+    gSynchConsole = new SynchConsole();
     addrLock = new Semaphore("addrLock", 1);
     processTab = new PTable(10);
     gPhyPageBM = new BitMap(256);
-*/
+
 #endif
 
 #ifdef FILESYS

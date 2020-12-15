@@ -14,6 +14,7 @@ PTable::PTable(int size)
 	bm->Mark(0);
 
 	pcb[0] = new PCB[0];
+	
 	pcb[0]->parentID = -1;
 	
 }
@@ -39,14 +40,14 @@ int PTable::ExecUpdate(char* filename)
 	bmsem->P();			//chi nap 1 tien trinh vao mot thoi diem
 
 //Kiem tra file co ton tai tren may khong
-	OpenFile *executable = fileSystem->Open(filename);
-	if (executable == NULL) 
+	//OpenFile *executable = fileSystem->Open(filename);
+	if (filename == NULL) 
 	{
 		printf("\nUnable to open file %s\n", filename);
 		bmsem->V();
 		return -1;
     	}
-	delete executable;			// close file
+	//delete executable;			// close file
 ////////////////////////////////////////////////////////////
 
 //Kiem tra chuong trinh duoc goi co la chinh no khong
@@ -70,8 +71,12 @@ int PTable::ExecUpdate(char* filename)
 
 	pcb[ID]= new PCB(ID);
 	bm->Mark(ID);
-	int pID= pcb[ID]->Exec(filename,ID);
 
+	// parrentID là processID của currentThread
+    pcb[ID]->parentID = currentThread->processID;
+	printf("ExecUpd: %s -->",filename);
+	int pID= pcb[ID]->Exec(filename,ID);
+	
 	bmsem->V();
 	return pID;
 }
@@ -131,7 +136,7 @@ int PTable::JoinUpdate(int pID)
 		return -1;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////////
-	
+	pcb[pcb[pID]->parentID]->IncNumWait();
 
 	pcb[pID]->JoinWait(); 	//doi den khi tien trinh con ket thuc
 

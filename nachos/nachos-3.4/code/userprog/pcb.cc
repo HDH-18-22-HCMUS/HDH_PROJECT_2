@@ -101,7 +101,10 @@ void PCB::ExitRelease()
 //------------------------------------------------------------------
 int PCB::Exec(char *filename, int pID)
 {
+	
 	mutex->P();
+	printf("PCB ");
+	
 	thread= new Thread(filename);
 	if(thread == NULL)
 	{
@@ -112,7 +115,9 @@ int PCB::Exec(char *filename, int pID)
 	thread->processID= pID;
 	parentID = currentThread->processID;
 	thread->Fork(MyStartProcess,pID);
+	
 	mutex->V();
+	thread->Print();
 	return pID;
 }
 
@@ -120,7 +125,12 @@ int PCB::Exec(char *filename, int pID)
 //*************************************************************************************
 void MyStartProcess(int pID)
 {
+	currentThread->Print();
+	printf("%d",pID);
 	char *filename= processTab->GetName(pID);
+	printf("MyStartProc");
+	//printf(filename);
+
 	AddrSpace *space= new AddrSpace(filename);
 	if(space == NULL)
 	{

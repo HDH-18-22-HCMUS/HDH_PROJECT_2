@@ -170,7 +170,7 @@ void ExceptionHandler(ExceptionType which)
     {
     case SyscallException:
     {
-        SynchConsole *gSynchConsole = new SynchConsole();
+        //SynchConsole *gSynchConsole = new SynchConsole();
         switch (type)
         {
         case SC_Halt:
@@ -419,6 +419,7 @@ void ExceptionHandler(ExceptionType which)
             virtAddr = machine->ReadRegister(4); // doc dia chi ten chuong trinh tu thanh ghi r4
             char *name;
             name = User2System(virtAddr, MAX_LENGTH); // Lay ten chuong trinh, nap vao kernel
+            printf("SC_EXEC: %s -->",name);
             if (name == NULL)
             {
                 DEBUG('a', "\n Not enough memory in System");
@@ -483,7 +484,7 @@ void ExceptionHandler(ExceptionType which)
             break;
         }
         }
-        delete gSynchConsole;
+        //delete gSynchConsole;
         AdvanceProgramCounter();
         break;
     }

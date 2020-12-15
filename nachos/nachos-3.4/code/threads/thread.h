@@ -106,7 +106,7 @@ class Thread {
     void CheckOverflow();   			// Check if thread has 
 						// overflowed its stack
     void setStatus(ThreadStatus st) { status = st; }
-    char* getName() { return (name); }
+    char* getName() {return (name); }
     void Print() { printf("%s, ", name); }
 
   private:
