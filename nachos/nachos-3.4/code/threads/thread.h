@@ -90,9 +90,7 @@ class Thread {
     // basic thread operations
     int processID; // ID de phan biet cac tien trinh
     int exitStatus;
-
-    int processID;
-    int exitStatus;
+    
     void FreeSpace(){
       if (space != 0)
       delete space;
