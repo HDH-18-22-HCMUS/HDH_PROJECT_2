@@ -79,7 +79,7 @@ class Thread {
     // THEY MUST be in this position for SWITCH to work.
     int* stackTop;			 // the current stack pointer
     int machineState[MachineStateSize];  // all registers except for stackTop
-
+    
   public:
     Thread(char* debugName);		// initialize a Thread 
     ~Thread(); 				// deallocate a Thread
@@ -91,6 +91,13 @@ class Thread {
     int processID; // ID de phan biet cac tien trinh
     int exitStatus;
 
+    int processID;
+    int exitStatus;
+    void FreeSpace(){
+      if (space != 0)
+      delete space;
+    }
+
     void Fork(VoidFunctionPtr func, int arg); 	// Make thread run (*func)(arg)
     void Yield();  				// Relinquish the CPU if any 
 						// other thread is runnable
@@ -101,7 +108,7 @@ class Thread {
     void CheckOverflow();   			// Check if thread has 
 						// overflowed its stack
     void setStatus(ThreadStatus st) { status = st; }
-    char* getName() { return (name); }
+    char* getName() {return (name); }
     void Print() { printf("%s, ", name); }
 
   private:

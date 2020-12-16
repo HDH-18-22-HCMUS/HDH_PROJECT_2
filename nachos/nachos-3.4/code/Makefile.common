@@ -93,7 +93,7 @@ USERPROG_C = ../userprog/addrspace.cc\
 	../userprog/ptable.cc
 
 USERPROG_O = addrspace.o bitmap.o exception.o progtest.o console.o machine.o \
-	mipssim.o translate.o synchcons.o
+	mipssim.o translate.o synchcons.o pcb.o ptable.o
 
 VM_H = 
 VM_C = 

@@ -29,9 +29,10 @@ SynchDisk   *synchDisk;
 
 #ifdef USER_PROGRAM	// requires either FILESYS or FILESYS_STUB
 Machine *machine;	// user program memory and registers
+SynchConsole* gSynchConsole;
+PTable *processTab;
 Semaphore *addrLock;
-BitMap *gPhysPageBitMap; // qli frames
-PTable *pTab; //qli tien trinh
+BitMap *gPhyPageBM;
 #endif
 
 #ifdef NETWORK
@@ -87,38 +88,43 @@ Initialize(int argc, char **argv)
 #ifdef USER_PROGRAM
     bool debugUserProg = FALSE;	// single step user program
 #endif
+
 #ifdef FILESYS_NEEDED
     bool format = FALSE;	// format disk
 #endif
+
 #ifdef NETWORK
     double rely = 1;		// network reliability
     int netname = 0;		// UNIX socket name
 #endif
     
     for (argc--, argv++; argc > 0; argc -= argCount, argv += argCount) {
-	argCount = 1;
-	if (!strcmp(*argv, "-d")) {
-	    if (argc == 1)
-		debugArgs = "+";	// turn on all debug flags
-	    else {
-	    	debugArgs = *(argv + 1);
-	    	argCount = 2;
+	    argCount = 1;
+	    if (!strcmp(*argv, "-d")) {
+	        if (argc == 1)
+		        debugArgs = "+";	// turn on all debug flags
+	        else {
+	    	    debugArgs = *(argv + 1);
+	    	    argCount = 2;
+	        }
+	    } else if (!strcmp(*argv, "-rs")) {
+	        ASSERT(argc > 1);
+	        RandomInit(atoi(*(argv + 1)));	// initialize pseudo-random
+						                    // number generator
+	        randomYield = TRUE;
+	        argCount = 2;
 	    }
-	} else if (!strcmp(*argv, "-rs")) {
-	    ASSERT(argc > 1);
-	    RandomInit(atoi(*(argv + 1)));	// initialize pseudo-random
-						// number generator
-	    randomYield = TRUE;
-	    argCount = 2;
-	}
+
 #ifdef USER_PROGRAM
 	if (!strcmp(*argv, "-s"))
 	    debugUserProg = TRUE;
 #endif
+
 #ifdef FILESYS_NEEDED
 	if (!strcmp(*argv, "-f"))
 	    format = TRUE;
 #endif
+
 #ifdef NETWORK
 	if (!strcmp(*argv, "-l")) {
 	    ASSERT(argc > 1);
@@ -151,7 +157,13 @@ Initialize(int argc, char **argv)
     CallOnUserAbort(Cleanup);			// if user hits ctl-C
     
 #ifdef USER_PROGRAM
+
     machine = new Machine(debugUserProg);	// this must come first
+    gSynchConsole = new SynchConsole();
+    addrLock = new Semaphore("addrLock", 1);
+    processTab = new PTable(10);
+    gPhyPageBM = new BitMap(256);
+
 #endif
 
 #ifdef FILESYS
@@ -181,6 +193,7 @@ Cleanup()
     
 #ifdef USER_PROGRAM
     delete machine;
+    delete gSynchConsole;
 #endif
 
 #ifdef FILESYS_NEEDED

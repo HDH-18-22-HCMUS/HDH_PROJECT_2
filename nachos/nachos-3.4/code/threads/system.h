@@ -33,16 +33,21 @@ extern Statistics *stats;			// performance metrics
 extern Timer *timer;				// the hardware alarm clock
 
 
-#define USER_PROGRAM 1
+//#define USER_PROGRAM 1
+//#define FILESYS_NEEDED 1
+//#define FILESYS_STUB 1
 
 #ifdef USER_PROGRAM 
+#include "synch.h"
 #include "synchcons.h"
 #include "machine.h"
-//extern SynchConsole* gSynchConsole;
+
+extern SynchConsole* gSynchConsole;
 extern Machine* machine;	// user program memory and registers
-extern Semaphore *addrLock;	// semaphore
-extern BitMap *gPhysPageBitMap;	// quan ly cac frame
-extern PTable *pTab;
+extern Semaphore* addrLock;
+extern PTable* processTab;
+extern BitMap* gPhyPageBM;
+
 #endif
 
 #ifdef FILESYS_NEEDED 		// FILESYS or FILESYS_STUB 

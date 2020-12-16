@@ -115,7 +115,6 @@ IntStatus
 Interrupt::SetLevel(IntStatus now)
 {
     IntStatus old = level;
-    
     ASSERT((now == IntOff) || (inHandler == FALSE));// interrupt handlers are 
 						// prohibited from enabling 
 						// interrupts
@@ -160,6 +159,7 @@ Interrupt::OneTick()
 	stats->totalTicks += UserTick;
 	stats->userTicks += UserTick;
     }
+    //printf("\n== Tick %d ==\n", stats->totalTicks);
     DEBUG('i', "\n== Tick %d ==\n", stats->totalTicks);
 
 // check any pending interrupts are now ready to fire

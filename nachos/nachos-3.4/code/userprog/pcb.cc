@@ -13,11 +13,11 @@ PCB::PCB(int id)
 	exitcode= 0;
 	numwait= 0;
 	if(id)
-		parentID= currentThread->processID;
+		parentID = currentThread->processID;
 	else
 		parentID= 0;
 	thread= NULL;
-	JoinStatus= -1;
+	//JoinStatus= -1;
 
 }
 
@@ -29,11 +29,17 @@ PCB::~PCB()
 		delete exitsem;
 	if(mutex != NULL)
 		delete mutex;
+	if(thread != NULL)
+	{
+		thread->FreeSpace();
+		thread->Finish();
+	}
 }
 
 //------------------------------------------------------------------
 int PCB::GetID()
 {
+	pid = thread->processID;
 	return pid;
 }
 
@@ -95,7 +101,10 @@ void PCB::ExitRelease()
 //------------------------------------------------------------------
 int PCB::Exec(char *filename, int pID)
 {
+	
 	mutex->P();
+	//printf("PCB ");
+	
 	thread= new Thread(filename);
 	if(thread == NULL)
 	{
@@ -104,8 +113,11 @@ int PCB::Exec(char *filename, int pID)
 		return -1;
 	}
 	thread->processID= pID;
+	parentID = currentThread->processID;
 	thread->Fork(MyStartProcess,pID);
+	
 	mutex->V();
+	//thread->Print();
 	return pID;
 }
 
@@ -113,7 +125,13 @@ int PCB::Exec(char *filename, int pID)
 //*************************************************************************************
 void MyStartProcess(int pID)
 {
+	
+	
+	//printf("%d",pID);
 	char *filename= processTab->GetName(pID);
+	//printf("MyStartProc");
+	//printf(filename);
+	//if (0!=strcmp(filename,"./test/pong")){strcpy(filename,"./test/ping")	;}
 	AddrSpace *space= new AddrSpace(filename);
 	if(space == NULL)
 	{
@@ -121,7 +139,8 @@ void MyStartProcess(int pID)
 		return; 
 	}
 	currentThread->space= space;
-
+	//printf("MyStartProc: ");
+	//currentThread->Print();
 	space->InitRegisters();		// set the initial register values
 	space->RestoreState();		// load page table register
 

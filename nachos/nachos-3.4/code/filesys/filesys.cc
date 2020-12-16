@@ -227,6 +227,7 @@ FileSystem::Create(char *name, int initialSize)
 OpenFile *
 FileSystem::Open(char *name)
 { 
+    //int freeSlot = this->FindFreeSlot();
     Directory *directory = new Directory(NumDirEntries);
     OpenFile *openFile = NULL;
     int sector;
@@ -238,8 +239,22 @@ FileSystem::Open(char *name)
 	openFile = new OpenFile(sector);	// name was found in directory 
     delete directory;
     return openFile;				// return NULL if not found
+    
+   /*if (sector >= 0)
+		openFile[freeSlot] = new OpenFile(sector, type);	// name was found in directory 
+	delete directory;
+	//index++;
+	return openFile[freeSlot];	*/
 }
 
+/*int FileSystem::FindFreeSlot()
+{
+	for(int i = 2; i < 15; i++)
+	{
+		if(openFile[i] == NULL) return i;		
+	}
+	return -1;
+}*/
 //----------------------------------------------------------------------
 // FileSystem::Remove
 // 	Delete a file from the file system.  This requires:

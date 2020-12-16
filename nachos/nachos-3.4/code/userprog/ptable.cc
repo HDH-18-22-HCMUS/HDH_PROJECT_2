@@ -1,5 +1,6 @@
 #include "ptable.h"
 #include "system.h"
+#include "openfile.h"
 
 PTable::PTable(int size)
 {
@@ -11,6 +12,11 @@ PTable::PTable(int size)
 	for(i = 0 ; i < MAXPROCESS ; ++i)
 		pcb[i] = NULL;
 	bm->Mark(0);
+
+	pcb[0] = new PCB[0];
+	
+	pcb[0]->parentID = -1;
+	
 }
 
 PTable::~PTable()
@@ -18,8 +24,10 @@ PTable::~PTable()
 	int i=0;
 	if(bm!=NULL)
 		delete bm;
+
 	if(bmsem!=NULL)
 		delete bmsem;
+
 	for(i=0; i<MAXPROCESS; i++)
 		if(pcb[i]!=NULL)
 			delete pcb[i];
@@ -32,18 +40,18 @@ int PTable::ExecUpdate(char* filename)
 	bmsem->P();			//chi nap 1 tien trinh vao mot thoi diem
 
 //Kiem tra file co ton tai tren may khong
-	OpenFile *executable = fileSystem->Open(filename);
-	if (executable == NULL) 
+	//OpenFile *executable = fileSystem->Open(filename);
+	if (filename == NULL) 
 	{
 		printf("\nUnable to open file %s\n", filename);
 		bmsem->V();
 		return -1;
     	}
-	delete executable;			// close file
+	//delete executable;			// close file
 ////////////////////////////////////////////////////////////
 
 //Kiem tra chuong trinh duoc goi co la chinh no khong
-	if(!strcmp(filename,currentThread->getName()))
+	if(strcmp(filename,currentThread->getName()) == 0)
 	{
 		printf("\nLoi: khong duoc phep goi exce chinh no !!!\n");
 		bmsem->V();
@@ -63,8 +71,12 @@ int PTable::ExecUpdate(char* filename)
 
 	pcb[ID]= new PCB(ID);
 	bm->Mark(ID);
+	pcb[ID]->SetFileName(filename);
+	// parrentID là processID của currentThread
+    pcb[ID]->parentID = currentThread->processID;
+	//printf("ExecUpd: %s -->",filename);
 	int pID= pcb[ID]->Exec(filename,ID);
-
+	
 	bmsem->V();
 	return pID;
 }
@@ -83,6 +95,7 @@ int PTable::ExitUpdate(int ec)
 //Neu la main process thi Halt()
 	if(pID==0)
 	{
+		currentThread->FreeSpace();
 		interrupt->Halt();
 		return 0;
 	}
@@ -123,7 +136,6 @@ int PTable::JoinUpdate(int pID)
 		return -1;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////////
-	
 
 	pcb[pID]->JoinWait(); 	//doi den khi tien trinh con ket thuc
 
@@ -134,10 +146,10 @@ int PTable::JoinUpdate(int pID)
 		printf("\nProcess exit with exitcode EC = %d ",ec);
 		return -1;
 	}
-
+	
 	pcb[pID]->ExitRelease();	//cho phep tien trinh con ket thuc
 	
-	return 0;
+	return ec;
 }
 
 void PTable::Remove(int pID)
@@ -154,7 +166,7 @@ void PTable::Remove(int pID)
 //----------------------------------------------------------------------------------------------
 int PTable::GetFreeSlot()
 {
-	return bm->FindFreeSlot();
+	return bm->Find();//FreeSlot();
 }
 
 bool PTable::IsExist(int pID)
@@ -167,5 +179,8 @@ bool PTable::IsExist(int pID)
 char* PTable::GetName(int pID)
 {
 	if(pID>=0 && pID<10 && bm->Test(pID))
-		return pcb[pID]->GetNameThread();
+	{
+		//return pcb[pID]->GetNameThread();
+		return pcb[pID]->GetFileName();
+	}
 }

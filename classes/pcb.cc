@@ -65,6 +65,7 @@ void PCB::DecNumWait()
 
 char* PCB::GetNameThread()
 {
+	
 	return thread->getName();
 }
 

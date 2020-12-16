@@ -10,10 +10,12 @@ private:
 	Semaphore	*joinsem;	//semaphore cho qua trinh join
 	Semaphore	*exitsem;	//semaphore cho qua trinh exit
 	Semaphore	*mutex;
+
 	int		exitcode;
-	Thread		*thread;
+	Thread	*thread;
 	int		pid;
 	int		numwait;	//so tien trinh da join
+    char FileName[32];          // Ten cua tien trinh
 
 public:
 	int 	parentID;	//ID cua tien trinh cha
@@ -21,6 +23,7 @@ public:
 
 	PCB(int id);
 	~PCB();
+	
 	int Exec(char *filename, int pID); //nap chuong trinh co ten luu trong bien filename va processID se la pID
 	int GetID();
 	int GetNumWait();
@@ -33,6 +36,9 @@ public:
 	void SetExitCode(int ec);
 	int GetExitCode();
 	char* GetNameThread();
+
+	void SetFileName(char* fn){strcpy(FileName,fn);};    // Set ten tien trinh
+    char* GetFileName(){return this->FileName;};        // Tra ve ten tien trinh
 };
 
 //*********************************************************************************************************************
