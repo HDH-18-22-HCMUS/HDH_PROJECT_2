@@ -54,9 +54,10 @@ void
 Scheduler::ReadyToRun (Thread *thread)
 {
     DEBUG('t', "Putting thread %s on ready list.\n", thread->getName());
-   
+    //printf("Putting thread %s on ready list.\n", thread->getName());
     thread->setStatus(READY);
     readyList->Append((void *)thread);
+    
 }
 
 //----------------------------------------------------------------------
@@ -91,7 +92,8 @@ void
 Scheduler::Run (Thread *nextThread)
 {
     Thread *oldThread = currentThread;
-    
+    //printf("---RUN---\n");
+    //Print();
 #ifdef USER_PROGRAM			// ignore until running user programs 
     if (currentThread->space != NULL) {	// if this thread is a user program,
         currentThread->SaveUserState(); // save the user's CPU registers
@@ -104,10 +106,11 @@ Scheduler::Run (Thread *nextThread)
 
     currentThread = nextThread;		    // switch to the next thread
     currentThread->setStatus(RUNNING);      // nextThread is now running
-    
+  ;
     DEBUG('t', "Switching from thread \"%s\" to thread \"%s\"\n",
 	  oldThread->getName(), nextThread->getName());
-    
+    //printf( "Switching from thread \"%s\" to thread \"%s\"\n",
+	  //oldThread->getName(), nextThread->getName());
     // This is a machine-dependent assembly language routine defined 
     // in switch.s.  You may have to think
     // a bit to figure out what happens after this, both from the point

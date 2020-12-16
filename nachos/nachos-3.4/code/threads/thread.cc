@@ -35,7 +35,7 @@
 Thread::Thread(char* threadName)
 {
     name = threadName;
-    //printf(name);
+    //printf("CREATE: %s \n",name);
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
@@ -92,7 +92,8 @@ Thread::~Thread()
 void 
 Thread::Fork(VoidFunctionPtr func, int arg)
 { 
-   
+    //printf("Forking thread \"%s\" with func = 0x%x, arg = %d\n",
+	    //name, (int) func, arg);
     DEBUG('t', "Forking thread \"%s\" with func = 0x%x, arg = %d\n",
 	  name, (int) func, arg);
     
@@ -185,15 +186,16 @@ Thread::Yield ()
     IntStatus oldLevel = interrupt->SetLevel(IntOff);
     
     ASSERT(this == currentThread);
+   
     
+    //printf( "Yielding thread \"%s\"\n", getName());
     DEBUG('t', "Yielding thread \"%s\"\n", getName());
     
     nextThread = scheduler->FindNextToRun();
     
     if (nextThread != NULL) {
 	scheduler->ReadyToRun(this);
-    printf("NextThread:");
-    nextThread->Print();
+   
 	scheduler->Run(nextThread);
     }
     (void) interrupt->SetLevel(oldLevel);

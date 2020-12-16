@@ -160,7 +160,7 @@ AddrSpace::AddrSpace(char* filename)
 
     // so trang con trong tren RAM
     int numclear = gPhyPageBM->NumClear();
-    printf("\n\nSize: %d | numPages: %d | PageSize: %d | Numclear: %d\n\n", size, numPages, PageSize, numclear);  
+    //printf("\n\nSize: %d | numPages: %d | PageSize: %d | Numclear: %d\n\n", size, numPages, PageSize, numclear);  
 
     if (numPages > numclear){
         printf("\nAddrSpace:Load: khong du bo nho cho tien trinh moi..!");
@@ -185,7 +185,7 @@ AddrSpace::AddrSpace(char* filename)
    
         // xóa các trang này trên memory
         bzero(&(machine->mainMemory[pageTable[i].physicalPage*PageSize]), PageSize);
-        printf("phyPage %d \n",pageTable[i].physicalPage);
+        //printf("phyPage %d \n",pageTable[i].physicalPage);
     }
     addrLock->V();
 

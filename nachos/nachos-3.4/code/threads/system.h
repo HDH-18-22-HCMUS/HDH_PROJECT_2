@@ -33,9 +33,9 @@ extern Statistics *stats;			// performance metrics
 extern Timer *timer;				// the hardware alarm clock
 
 
-#define USER_PROGRAM 1
-#define FILESYS_NEEDED 1
-#define FILESYS_STUB 1
+//#define USER_PROGRAM 1
+//#define FILESYS_NEEDED 1
+//#define FILESYS_STUB 1
 
 #ifdef USER_PROGRAM 
 #include "synch.h"

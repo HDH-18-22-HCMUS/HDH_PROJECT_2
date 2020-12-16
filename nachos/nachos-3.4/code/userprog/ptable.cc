@@ -71,10 +71,10 @@ int PTable::ExecUpdate(char* filename)
 
 	pcb[ID]= new PCB(ID);
 	bm->Mark(ID);
-
+	pcb[ID]->SetFileName(filename);
 	// parrentID là processID của currentThread
     pcb[ID]->parentID = currentThread->processID;
-	printf("ExecUpd: %s -->",filename);
+	//printf("ExecUpd: %s -->",filename);
 	int pID= pcb[ID]->Exec(filename,ID);
 	
 	bmsem->V();
@@ -136,7 +136,6 @@ int PTable::JoinUpdate(int pID)
 		return -1;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////////
-	pcb[pcb[pID]->parentID]->IncNumWait();
 
 	pcb[pID]->JoinWait(); 	//doi den khi tien trinh con ket thuc
 
@@ -147,10 +146,10 @@ int PTable::JoinUpdate(int pID)
 		printf("\nProcess exit with exitcode EC = %d ",ec);
 		return -1;
 	}
-
+	
 	pcb[pID]->ExitRelease();	//cho phep tien trinh con ket thuc
 	
-	return 0;
+	return ec;
 }
 
 void PTable::Remove(int pID)
@@ -180,5 +179,8 @@ bool PTable::IsExist(int pID)
 char* PTable::GetName(int pID)
 {
 	if(pID>=0 && pID<10 && bm->Test(pID))
-		return pcb[pID]->GetNameThread();
+	{
+		//return pcb[pID]->GetNameThread();
+		return pcb[pID]->GetFileName();
+	}
 }

@@ -419,7 +419,7 @@ void ExceptionHandler(ExceptionType which)
             virtAddr = machine->ReadRegister(4); // doc dia chi ten chuong trinh tu thanh ghi r4
             char *name;
             name = User2System(virtAddr, MAX_LENGTH); // Lay ten chuong trinh, nap vao kernel
-            printf("SC_EXEC: %s -->",name);
+            //printf("SC_EXEC: %s -->",name);
             if (name == NULL)
             {
                 DEBUG('a', "\n Not enough memory in System");
@@ -457,7 +457,7 @@ void ExceptionHandler(ExceptionType which)
             machine->WriteRegister(2, res);
             break;
         }
-/*
+
         case SC_Exit:
         {
             //void Exit(int status);
@@ -476,7 +476,7 @@ void ExceptionHandler(ExceptionType which)
             currentThread->Finish();
             break;
         }
-*/
+
         default:
         {
             printf("Unexpected user mode exception %d %d\n", which, type);

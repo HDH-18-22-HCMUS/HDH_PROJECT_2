@@ -15,6 +15,7 @@ private:
 	Thread	*thread;
 	int		pid;
 	int		numwait;	//so tien trinh da join
+    char FileName[32];          // Ten cua tien trinh
 
 public:
 	int 	parentID;	//ID cua tien trinh cha
@@ -35,6 +36,9 @@ public:
 	void SetExitCode(int ec);
 	int GetExitCode();
 	char* GetNameThread();
+
+	void SetFileName(char* fn){strcpy(FileName,fn);};    // Set ten tien trinh
+    char* GetFileName(){return this->FileName;};        // Tra ve ten tien trinh
 };
 
 //*********************************************************************************************************************
